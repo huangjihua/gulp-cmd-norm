@@ -1,0 +1,35 @@
+{
+  "name": "gulp-cmd-norm",
+  "version": "1.0.0",
+  "description": "seajs的CMD模块的标准化独立打包与合并工具",
+  "main": "index.js",
+  "scripts": {
+    
+    "test":"node ./test/gulpfile.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huangjihua/gulp-cmd-norm.git"
+  },
+  "keywords": [
+    "gulp plugin",
+    "seajs",
+    "cmd",
+    "concat",
+    "transform"
+  ],
+  "author": "hank.online@foxmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/huangjihua/gulp-cmd-norm/issues"
+  },
+  "homepage": "https://github.com/huangjihua/gulp-cmd-norm#readme",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-util": "^3.0.8",
+    "promise": "^8.0.2",
+    "through2": "^2.0.3",
+    "underscore": "^1.9.1"
+  },
+  "readmeFilename": "README.md"
+}
