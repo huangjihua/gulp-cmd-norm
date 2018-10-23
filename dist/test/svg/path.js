@@ -7,10 +7,10 @@
  */
 
 // Lower level API to animate any kind of svg path
-define(function(require,exports,module) {
-    let utils = require('mod/core/utils');
+define("mod/svg/path" ,["mod/core/utils","mod/svg/shifty"], function(require , exports , module){
+    let utils = require("mod/core/utils");
     debugger;
-    let Tweenable = require('mod/svg/shifty'); //https://npm.taobao.org/package/shifty
+    let Tweenable = require("mod/svg/shifty"); //https://npm.taobao.org/package/shifty
    
 
     let EASING_ALIASES = {

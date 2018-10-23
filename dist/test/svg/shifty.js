@@ -1,5 +1,5 @@
 /*! 2.6.0 */ 
-define(function(require , exports , module){
+define("mod/svg/shifty" ,[], function(require , exports , module){
     module.exports= function (t) {
         function e(r) {
             if (n[r]) return n[r].exports;

@@ -22,47 +22,6 @@ var PLUGIN_NAME = 'gulp-cmd-norm';
 var REQUIRE_RE = /"(?:\\"|[^"])*"|'(?:\\'|[^'])*'|\/\*[\S\s]*?\*\/|\/(?:\\\/|[^\/\r\n])+\/(?=[^\/])|\/\/.*|\w+require\(.*\)|require\s*\(\s*(["'])(.+?)\1\s*\)/g;
 
 
-module.exports = function(option){
-    option =option || {};
-    option.mods = [];
-    option.content = '';
-    option.id =  option.id||'';
-    option.alias = option.alias || {};
-    option.ext=  option.ext ||false;  //是否处理.min.js情况
-    option.merge = option.merge || false; //依赖模块是否合并打包
-    option.encoding = option.encoding || 'UTF-8';
-    option.tmpExtNames = option.tmpExtNames || ['.tpl'];
-    option.cache = {};
-
-    if(option.base){
-        option.base = path.normalize(path.resolve(option.base,'.')+path.sep);
-    }
-    return through.obj(function(file,enc,cb){
-        if(!file){
-            return cb();
-        }
-
-        if(!option.base){
-            gutil.log(gutil.colors.red(PLUGIN_NAME+' error: `option.base` is  required!'));
-            return cb(null,file);
-        }
-        // 处理module content;
-        if(file.isBuffer()){
-            option.content =file.contents.toString();
-            parseModuleContents(option,file).then(function(){
-                var jsFilePath = file.base + path.sep + file.relative;
-                jsFilePath = path.normalize(jsFilePath);
-                file.contents = new Buffer(comboContents(option));
-                gutil.log(PLUGIN_NAME + ':','✔ Module [' + jsFilePath + '] combo success.');
-                cb(null,file);
-            });
-            return;
-        }
-        return cb(null,file);
-    });
-
-}
-
 /**
  * 解析模块树并读取模块
  * @param {Object} option 
@@ -72,20 +31,21 @@ function parseModuleContents(option,file){
     var  modFilepPath = path.resolve(file.base,file.relative);
     modDirPath = path.dirname(modFilepPath);
     fileRelative = modFilepPath.split(option.base)[1].replace(/(.min)?(.js)/g,'');
-    // console.log('fileRelative:',fileRelative);
-    return new Promise(function(done){
+    // console.log('modDirPath:',modDirPath);
+    return new Promise((resolve,reject) => {
         var deps = parseDependencies(option,option.content,{
             root: true,
             id: option.id+fileRelative,
-            dir:modFilepPath,
+            dir:modDirPath,
             filePath:modFilepPath
         });
+     
         if(deps.length){
-            done(readDeps(option,deps));
+            resolve(readDeps(option,deps));
         }else{
-            done();
+            resolve();
         }
-    });
+    })
 }
 
 /**
@@ -96,12 +56,16 @@ function parseModuleContents(option,file){
  */
 function parseDependencies(option,content,mod){
     var ret = [];
-    content.replace(REQUIRE_RE,function(moduleId){
+    content.replace(REQUIRE_RE,function(m,m1,moduleId){
         moduleId && ret.push(moduleId);
     });
     var deps = _.chain(ret).uniq().map(function(moduleId){
         return parseMod(moduleId,option,mod.dir);
-    })
+    }).value();
+    mod.deps = deps;
+    mod.content = content;
+    option.mods.push(mod);
+    return deps;
 }
 
 /**
@@ -115,7 +79,7 @@ function parseMod(id,option,parentDir){
     //别名配置
     var isAlias = option.alias[id];
     var ext = path.extname(ret); //扩展名
-    if(option.ext){
+    if(option.isExt){
         //用来支持*.min.js模块引用
         if(!ext || ext =='.min'){
             ret +='.js' 
@@ -123,7 +87,7 @@ function parseMod(id,option,parentDir){
     }
     var filePath = ret;
     ret = path.parse(ret);
-
+    
     ret.id = isAlias ? id:getId(filePath,option);
     ret.filePath = filePath;
     return  ret;
@@ -138,6 +102,7 @@ function parseMod(id,option,parentDir){
 function getPath(id,option,parentDir){
     var ret ;
     var first = id.charAt(0);
+    // console.log('parentDir:',parentDir);
     if(first ==='.'){
         ret = path.resolve(parentDir || option.base,id);
     }else if(option.alias[id]){
@@ -145,6 +110,7 @@ function getPath(id,option,parentDir){
     }else{
         ret =(option.base +id);
     }
+    // console.log('ret:',option.base);
     return path.normalize(ret);
 }
 
@@ -165,7 +131,8 @@ function getId(filePath,option){
  */
 function readDeps(option,parentDeps){
     var childDeps = [];
-
+    // console.log("parentDeps:",parentDeps);
+    //多个promise示例对象集合，
     var promises  = parentDeps.map(function(mod){
         return new Promise(function(resolve,reject){
             //忽略的模块
@@ -200,9 +167,16 @@ function readDeps(option,parentDeps){
             resolve();
         });
     });
-
+    //处理多个promises示例报错一个新的Promise示例
      return Promise.all(promises).then(function(){
-
+        if(childDeps.length){
+            return readDeps(option,childDeps);
+        }
+     },function(err){
+         gutil.log(gutil.colors.red(PLUGIN_NAME + 'Error:'+err));
+     }).catch(function(err){
+         gutil.log(gutil.colors.red(PLUGIN_NAME + 'Error:'+err));
+         console.log(err.stack);
      });
 }
 
@@ -214,13 +188,14 @@ function comboContents(option) {
     var CMD_HEAD_REG = /define\(.*?function\s*\(.*?\)\s*\{/;
     var content = '';
     option.mods.forEach(function (mod) {
-        var code = mod.code;
+        var code = mod.content;
 
         //替换模块内部id
         code = transform(option, mod, code);
 
         var deps = '[],';
         if (mod.deps.length) {
+            // console.log(mod.deps)
             deps = '["' + _.pluck(mod.deps, 'id').join('","') + '"],';
         }
 
@@ -235,7 +210,7 @@ function comboContents(option) {
         } else {//cmd 模块
             code = code.replace(CMD_HEAD_REG, define);
         }
-        if(option.meger){
+        if(option.merge){
             content += code + '\n'; //依赖模块合并
         }else{
             content = code; //单个模块
@@ -250,15 +225,15 @@ function comboContents(option) {
  * @param {String} code 
  */
 function transform(option, mod, code) {
-    code.replace(REQUIRE_RE, function (code_ref,moduleId) {
+    code.replace(REQUIRE_RE, function (code_ref,m1,moduleId) {
         /**
          * code_ref 正则所匹配到的代码如 `require('./mod')`
          * moduleId 匹配到的模块路径或者id `./mod`
+         * 条件:模块存在且不在忽略列表里 且 不在别名里 才对模块进行替换
          */
-        //条件:模块存在且不在忽略列表里 且 不在别名里 才对模块进行替换
         if (moduleId && option.ignore.indexOf(moduleId) == -1 && !option.alias[moduleId]) {
             var newId = getId(getPath(moduleId, option, mod.dir), option);
-            if(option.ext){
+            if(option.isExt){
                 if (!path.extname(newId)) {
                     newId += '.js';
                 }
@@ -279,7 +254,7 @@ function transform(option, mod, code) {
  * @param {Object} mod 
  */
 function parseTemplate(option, code, mod) {
-    mod.code = 'module.exports = \'' + jsEscape(code) + '\';';
+    mod.content = 'module.exports = \'' + jsEscape(code) + '\';';
     mod.deps = [];
     option.mods.push(mod);
 }
@@ -292,4 +267,47 @@ function jsEscape(content) {
     //替换符号 u2028 u2029 \f \b \t \r ' " \
     return content.replace(/([\u2029\u2028\f\b\t\r'"\\])/g, "\\$1")
         .replace(/\n/g, ' ');// 这里替换换行符为空格
+}
+
+module.exports = function(option){
+    option =option || {};
+    option.mods = [];
+    option.content = '';
+    option.id =  option.id||'';
+    option.alias = option.alias || {};
+    option.isExt=  option.isExt ||false;  //是否处理.min.js情况
+    option.merge = option.merge || false; //依赖模块是否合并打包
+    option.ignore = option.ignore || [];
+    option.encoding = option.encoding || 'UTF-8';
+    option.tmpExtNames = option.tmpExtNames || ['.ejs'];
+    option.cache = {};
+
+    if(option.base){
+        option.base = path.normalize(path.resolve(option.base,'.')+path.sep);
+    }
+    return through.obj(function(file,enc,cb){
+        if(!file){
+            return cb();
+        }
+
+        if(!option.base){
+            gutil.log(gutil.colors.red(PLUGIN_NAME+' error: `option.base` is  required!'));
+            return cb(null,file);
+        }
+        // console.log('file:',file);
+        // 处理module content;
+        if(file.isBuffer()){
+            option.content =file.contents.toString();
+            parseModuleContents(option,file).then(function(){
+                var jsFilePath = file.base + path.sep + file.relative;
+                jsFilePath = path.normalize(jsFilePath);
+                file.contents = new Buffer(comboContents(option));
+                gutil.log(PLUGIN_NAME + ':','✔ Module [' + jsFilePath + '] combo success.');
+                cb(null,file);
+            });
+            return;
+        }
+        return cb(null,file);
+    });
+
 }

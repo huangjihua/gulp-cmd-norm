@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Swiper</title>
+    <meta content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=0" name="viewport"/>
+    <meta content="yes" name="apple-mobile-web-app-capable"/>
+    <meta content="black" name="apple-mobile-web-app-status-bar-style"/>
+    <meta content="telephone=no" name="format-detection"/>
+</head>
+<body>
+    <section class="g-flexview">
+        
+    </section>
+    <script src="https://cdn.bootcss.com/seajs/3.0.3/sea-debug.js"></script>
+
+
+
+<script>
+    seajs.config({
+        //设置模块的根目录
+        base:'./',
+        //定义模块路径
+        paths:{
+            'mod':'/test'//模块根目录
+        },
+        // comboExcludes: /zepto\.js/ ,// 从 combo 中排除掉 zepto.js
+        // comboSyntax: ['?', '&'],
+        // preload: "../js/zepto.js",  //确保先加载
+        charset: 'utf-8',
+        // alias:{
+        //     "zepto":"/js/zepto.js",
+        //     // "zepto":'http://10.168.66.42:82/cheui/dist/build/js/zepto.js'
+        // },
+        //如果有文件打包后，文件名可能不同，可以通过这个来处理；
+        map:[
+            ['.min.js','.js']
+        ]
+    });
+    seajs.use(['mod/core/utils','mod/svg/rect'],function(){
+        var utils =seajs.require('mod/core/utils');
+        var rect =seajs.require('mod/svg/rect'); 
+        var bar = new rect('.toast-loading-ico', {
+                strokeWidth: 8,
+                rx: 26, //控制圆角
+                ry: 26,
+                easing: 'easeInOut',
+                duration: 3000, //毫秒
+                color: '#fff',
+                trailColor: '#ccc',
+                trailWidth: 2,
+                svgStyle: null,
+            });
+        bar.animate(1.0); // Number from 0.0 to 1.0
+        
+    });
+</script>
+</body>
+</html>
