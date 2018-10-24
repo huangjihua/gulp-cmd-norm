@@ -11,7 +11,7 @@
 //  ['core/utils','svg/shape'],
 define("mod/svg/rect" ,["mod/core/utils","mod/svg/shape"], function(require , exports , module){
     let utils = require("mod/core/utils");
-    let Shape = new require("mod/svg/shape");
+    let Shape = require("mod/svg/shape");
    
     let Rect = function Square(container, options) {
         this._pathTemplate =
