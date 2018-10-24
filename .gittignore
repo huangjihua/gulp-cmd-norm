@@ -1,5 +1,5 @@
-# Logs
-logs
+.DS_Store
+node_modules/
+dist/
 *.log
-node_modules
 .idea
