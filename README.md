@@ -9,7 +9,7 @@ gulp-cmd-norm is a simple standardized CMD modular packaging tool.
 - automatically handles module paths and other issues.
 - Support for dependency module merging.
 
-## Install
+## Install
     npm intall gulp-cmd-norm
 ## Usage
 

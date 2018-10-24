@@ -1,6 +1,6 @@
 {
   "name": "gulp-cmd-norm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "一个简单的标准化CMD模块化封装工具",
   "main": "index.js",
   "scripts": {
