@@ -1,16 +1,17 @@
 # gulp-cmd-norm
-[![NPM Version](https://img.shields.io/npm/v/gulp-cmd-norm.svg)](https://npmjs.org/package/gulp-cmd-norm)  [![NPM Downloads](http://img.shields.io/npm/dm/gulp-cmd-norm.svg)](https://npmjs.org/package/gulp-cmd-norm)
+[![NPM Version](https://img.shields.io/npm/v/gulp-cmd-norm.svg)](https://npmjs.org/package/gulp-cmd-norm)  [![NPM Downloads](https://img.shields.io/npm/dt/:package.svg)](https://npmjs.org/package/gulp-cmd-norm)
 
 [document](https://github.com/huangjihua/gulp-cmd-norm)
 [中文文档](https://github.com/huangjihua/gulp-cmd-norm/chinese.md)
-gulp-cmd-norm is a simple standardized CMD modular packaging tool.
-## Feature
-- automatically handles module paths and other issues.
-- Support for dependency module merging.
+gulp-cmd-norm 是一个简单的标准化CMD模块化封装工具。
 
-## Install
+## 特性
+- 解决模块的路径问题
+- 支持多模块合并
+
+## 安装
     npm intall gulp-cmd-norm
-## Usage
+## 使用
 
 ```js
     var gulp = require('gulp');
@@ -30,7 +31,7 @@ gulp-cmd-norm is a simple standardized CMD modular packaging tool.
     });
 ```
 
-# Intro
+## 介绍
 
 #### source
 
@@ -67,14 +68,15 @@ gulp-cmd-norm is a simple standardized CMD modular packaging tool.
 **cmd({id:'mod/',base:'test/',....})**
 
 #### Parameters
-|parameters name | data type | description |
+
+| parameters name   |    data  type      |  description |
 |----------|:-------------:|------:|
-| id | String | Module Path? Configuration |
-| alias | Array | Module Alias |
-| isExt | Boolean | Does the module automatically? Append .js |
-| merge | Boolean | Whether to merge dependent modules for unified packaging |
-| ignore | Array | Ignore ?? module file ? |
-| encoding| String | File Encoding |
-| tmpExtNames| String | Custom Extension |
+| id      |  String |   模块路径配置 |
+| alias   |  Array  |   模块别名 |
+| isExt   | Boolean |   模块是否自动追加.js |
+| merge   | Boolean |   是否合并依赖模块统一打包 |
+| ignore  | Array   |   忽略的模块文件  |
+| encoding| String  |   文件编码 |
+| tmpExtNames| String | 自定义扩展名 |
 
 -----------------
