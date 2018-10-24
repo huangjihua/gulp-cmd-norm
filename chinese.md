@@ -1,8 +1,10 @@
 # gulp-cmd-norm
-[![NPM Version](https://img.shields.io/npm/v/gulp-cmd-norm.svg)](https://npmjs.org/package/gulp-cmd-norm)  [![NPM Downloads](https://img.shields.io/npm/dt/:package.svg)](https://npmjs.org/package/gulp-cmd-norm)
+[![NPM Version](https://img.shields.io/npm/v/gulp-cmd-norm.svg)](https://npmjs.org/package/gulp-cmd-norm) ![Travis (.org)](https://img.shields.io/travis/:user/:repo.svg) [![npm](https://img.shields.io/npm/dt/:package.svg)](https://github.com/huangjihua/gulp-cmd-norm) ![SonarQube Coverage](https://img.shields.io/sonar/http/sonar.petalslink.com/org.ow2.petals%3Apetals-se-ase/coverage.svg) [![GitHub issues](https://img.shields.io/github/issues/huangjihua/gulp-cmd-norm.svg)](https://github.com/huangjihua/gulp-cmd-norm/issues) [![GitHub forks](https://img.shields.io/github/forks/huangjihua/gulp-cmd-norm.svg)](https://github.com/huangjihua/gulp-cmd-norm/network) [![GitHub stars](https://img.shields.io/github/stars/huangjihua/gulp-cmd-norm.svg)](https://github.com/huangjihua/gulp-cmd-norm/stargazers) [![GitHub license](https://img.shields.io/github/license/huangjihua/gulp-cmd-norm.svg)](https://github.com/huangjihua/gulp-cmd-norm/blob/master/LICENSE) 
+
 
 [document](https://github.com/huangjihua/gulp-cmd-norm)
 [中文文档](https://github.com/huangjihua/gulp-cmd-norm/chinese.md)
+
 gulp-cmd-norm 是一个简单的标准化CMD模块化封装工具。
 
 ## 特性
