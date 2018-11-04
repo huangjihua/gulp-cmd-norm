@@ -10,7 +10,7 @@
 </head>
 <body>
     <section class="g-flexview">
-        
+         
     </section>
     <script src="https://cdn.bootcss.com/seajs/3.0.3/sea-debug.js"></script>
 
@@ -37,9 +37,9 @@
             ['.min.js','.js']
         ]
     });
-    seajs.use(['mod/core/utils','mod/svg/rect'],function(){
-        var utils =seajs.require('mod/core/utils');
-        var rect =seajs.require('mod/svg/rect'); 
+    seajs.use(['mod/core/utils','mod/svg/rect'],function(utils,rect){
+        // var utils =seajs.require('mod/core/utils');
+        // var rect =seajs.require('mod/svg/rect'); 
         var bar = new rect('.toast-loading-ico', {
                 strokeWidth: 8,
                 rx: 26, //控制圆角

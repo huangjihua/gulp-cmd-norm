@@ -9,8 +9,8 @@
 // Base object for different progress bar shapes 'mod/svg/shape',['mod/svg/path','core/utils']
 define(function(require, exports, module) {
    
-    let utils = require('mod/core/utils');
-    let Path =  require('mod/svg/path');
+    let utils = require('./utils');
+    let Path =  require('./path');
     let DESTROYED_ERROR = 'Object is destroyed';
 
     let Shape = function Shape(container, opts) {

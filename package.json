@@ -25,6 +25,7 @@
   "homepage": "https://github.com/huangjihua/gulp-cmd-norm#readme",
   "dependencies": {
     "gulp-util": "^3.0.8",
+    "package.json": "^2.0.1",
     "promise": "^8.0.2",
     "through2": "^2.0.3",
     "underscore": "^1.9.1"

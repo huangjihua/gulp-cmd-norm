@@ -10,8 +10,8 @@
  // ry 圆角
 //  ['core/utils','svg/shape'],
 define(function(require,exports,module){
-    let utils = require('mod/core/utils');
-    let Shape = require('mod/svg/shape');
+    let utils = require('./utils');
+    let Shape = require('./shape');
    
     let Rect = function Square(container, options) {
         this._pathTemplate =

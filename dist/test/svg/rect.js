@@ -9,8 +9,8 @@
  // rx 圆角
  // ry 圆角
 //  ['core/utils','svg/shape'],
-define("mod/svg/rect" ,["mod/core/utils","mod/svg/shape"], function(require , exports , module){
-    let utils = require("mod/core/utils");
+define("mod/svg/rect" ,["mod/svg/utils","mod/svg/shape"], function(require , exports , module){
+    let utils = require("mod/svg/utils");
     let Shape = require("mod/svg/shape");
    
     let Rect = function Square(container, options) {

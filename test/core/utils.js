@@ -4,7 +4,7 @@
  * utils  tools
  * author:huangjihua
  */
-define('utils',function(require,exports,module){
+define(function(require,exports,module){
     var utils = {};
     var PREFIXES = 'Webkit Moz O ms'.split(' ');
     var FLOAT_COMPARISON_EPSILON = 0.001;

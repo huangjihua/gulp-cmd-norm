@@ -28,7 +28,8 @@ var REQUIRE_RE = /"(?:\\"|[^"])*"|'(?:\\'|[^'])*'|\/\*[\S\s]*?\*\/|\/(?:\\\/|[^\
  * @param {Object} file 
  */
 function parseModuleContents(option,file){
-    var  modFilepPath = path.resolve(file.base,file.relative);
+    // var modFilepPath = path.resolve(file.base, file.relative);
+    var modFilepPath = file.path;
     modDirPath = path.dirname(modFilepPath);
     fileRelative = modFilepPath.split(option.base)[1].replace(/(.min)?(.js)/g,'');
     // console.log('modDirPath:',modDirPath);
@@ -189,21 +190,33 @@ function comboContents(option) {
     var content = '';
     option.mods.forEach(function (mod) {
         var code = mod.content;
-
+        
         //替换模块内部id
         code = transform(option, mod, code);
 
         var deps = '[],';
+       
+        
         if (mod.deps.length) {
-            // console.log(mod.deps)
+            // console.log('mod:', mod.deps);
+            mod.deps.forEach(function (item) { 
+                //如果不包含传入id，这里加上
+                if (item.id.search(option.id) === -1) {
+                    item.id = option.id + item.id;
+                }
+                // console.log(item.id);
+            })
+           
             deps = '["' + _.pluck(mod.deps, 'id').join('","') + '"],';
+               
         }
-
+    
         var define = 'define(';
         //当主模块为空时，设置为匿名模块，以方便自动执行
         if (mod.id) {
             define += '"' + mod.id + '" ,';
         }
+        
         define += deps + ' function(require , exports , module){';
         if (!CMD_HEAD_REG.test(code)) {//标准commonjs模块
             code = define + '\n' + code + '\n});';
@@ -225,6 +238,8 @@ function comboContents(option) {
  * @param {String} code 
  */
 function transform(option, mod, code) {
+    // console.log('mod', mod.id);
+
     code.replace(REQUIRE_RE, function (code_ref,m1,moduleId) {
         /**
          * code_ref 正则所匹配到的代码如 `require('./mod')`
@@ -238,8 +253,12 @@ function transform(option, mod, code) {
                     newId += '.js';
                 }
             }
-
+            //如果不包含传入id，这里加上
+            if (newId.search(option.id) === -1) {
+                newId = option.id + newId;
+            }
             newId = 'require("' + newId + '")';
+          
             code = code.replace(code_ref, newId);
         }
     });
@@ -270,18 +289,19 @@ function jsEscape(content) {
 }
 
 module.exports = function(option){
-    option =option || {};
-    option.mods = [];
-    option.content = '';
-    option.id =  option.id||'';
-    option.alias = option.alias || {};
-    option.isExt=  option.isExt ||false;  //是否处理.min.js情况
-    option.merge = option.merge || false; //依赖模块是否合并打包
-    option.ignore = option.ignore || [];
-    option.encoding = option.encoding || 'UTF-8';
-    option.tmpExtNames = option.tmpExtNames || ['.ejs'];
-    option.cache = {};
-
+    option = Object.assign({
+        mods: [],
+        content: '',
+        id: '',
+        alias: {},
+        isExt: false, //是否处理.min.js情况
+        merge: false, //依赖模块是否合并打包
+        ignore: [],
+        encoding: 'UTF-8',
+        tmpExtNames: ['.tpl', '.ejs'],
+        cache: {}
+    }, option);
+    option._base = option.base;
     if(option.base){
         option.base = path.normalize(path.resolve(option.base,'.')+path.sep);
     }
@@ -299,8 +319,12 @@ module.exports = function(option){
         if(file.isBuffer()){
             option.content =file.contents.toString();
             parseModuleContents(option,file).then(function(){
-                var jsFilePath = file.base + path.sep + file.relative;
-                jsFilePath = path.normalize(jsFilePath);
+                // var jsFilePath = file.base + path.sep + file.relative;
+                var jsFilePath = file.path;
+                // console.log(jsFilePath);
+                // console.log('path:', file.path); 
+                // jsFilePath = path.normalize(jsFilePath);
+                //  console.log(jsFilePath);
                 file.contents = new Buffer(comboContents(option));
                 gutil.log(PLUGIN_NAME + ':','✔ Module [' + jsFilePath + '] combo success.');
                 cb(null,file);
