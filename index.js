@@ -40,7 +40,6 @@ function parseModuleContents(option,file){
             dir:modDirPath,
             filePath:modFilepPath
         });
-     
         if(deps.length){
             resolve(readDeps(option,deps));
         }else{
@@ -51,9 +50,9 @@ function parseModuleContents(option,file){
 
 /**
  * 解析模块依赖列表
- * @param {Object} option 
- * @param {String} content 
- * @param {Object} mod 
+ * @param {Object} option
+ * @param {String} content
+ * @param {Object} mod
  */
 function parseDependencies(option,content,mod){
     var ret = [];
@@ -71,9 +70,9 @@ function parseDependencies(option,content,mod){
 
 /**
  * 解析单个模板
- * @param {String} id 
- * @param {Object} option 
- * @param {String} parentDir 
+ * @param {String} id
+ * @param {Object} option
+ * @param {String} parentDir  //当前文件一级目录
  */
 function parseMod(id,option,parentDir){
     var ret = getPath(id,option,parentDir);
@@ -88,7 +87,7 @@ function parseMod(id,option,parentDir){
     }
     var filePath = ret;
     ret = path.parse(ret);
-    
+    // console.log('filePath:',filePath);
     ret.id = isAlias ? id:getId(filePath,option);
     ret.filePath = filePath;
     return  ret;
@@ -103,7 +102,6 @@ function parseMod(id,option,parentDir){
 function getPath(id,option,parentDir){
     var ret ;
     var first = id.charAt(0);
-    // console.log('parentDir:',parentDir);
     if(first ==='.'){
         ret = path.resolve(parentDir || option.base,id);
     }else if(option.alias[id]){
@@ -111,7 +109,6 @@ function getPath(id,option,parentDir){
     }else{
         ret =(option.base +id);
     }
-    // console.log('ret:',option.base);
     return path.normalize(ret);
 }
 
@@ -183,20 +180,17 @@ function readDeps(option,parentDeps){
 
 /**
  * 模块处理与合并
- * @param {Object} option 
+ * @param {Object} option
  */
 function comboContents(option) {
     var CMD_HEAD_REG = /define\(.*?function\s*\(.*?\)\s*\{/;
     var content = '';
     option.mods.forEach(function (mod) {
         var code = mod.content;
-        
         //替换模块内部id
         code = transform(option, mod, code);
 
         var deps = '[],';
-       
-        
         if (mod.deps.length) {
             // console.log('mod:', mod.deps);
             mod.deps.forEach(function (item) { 
@@ -208,9 +202,7 @@ function comboContents(option) {
             })
            
             deps = '["' + _.pluck(mod.deps, 'id').join('","') + '"],';
-               
         }
-    
         var define = 'define(';
         //当主模块为空时，设置为匿名模块，以方便自动执行
         if (mod.id) {
@@ -238,8 +230,6 @@ function comboContents(option) {
  * @param {String} code 
  */
 function transform(option, mod, code) {
-    // console.log('mod', mod.id);
-
     code.replace(REQUIRE_RE, function (code_ref,m1,moduleId) {
         /**
          * code_ref 正则所匹配到的代码如 `require('./mod')`

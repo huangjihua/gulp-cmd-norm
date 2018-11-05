@@ -8,7 +8,7 @@
 
 // Lower level API to animate any kind of svg path
 define(function(require,exports,module) {
-    let utils = require('./utils');
+    let utils = require('core/utils');
     debugger;
     let Tweenable = require('./shifty'); //https://npm.taobao.org/package/shifty
    
